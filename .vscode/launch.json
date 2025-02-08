@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        //linux
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Game Linux",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "cwd": "${workspaceFolder}/Targets/Debug/bin",
+            "program": "${workspaceFolder}/Targets/Debug/bin/DanGame",
+        },
+    ]
+}

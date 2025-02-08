@@ -1,0 +1,18 @@
+{
+    "configurations": 
+    [
+        {
+            "includePath": [
+                "${workspaceFolder}/DanGame/src"
+            ],
+
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "defines": [],
+            "intelliSenseMode": "${default}",
+            "cppStandard": "c++17",
+            "cStandard": "c17",
+            "name": "cpp-dev"
+        }
+    ],
+    "version": 4
+}
