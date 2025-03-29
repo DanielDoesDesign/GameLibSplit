@@ -1,0 +1,33 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
+#include "PlayerBase.h"
+#include <map>
+#include "Command.h"
+
+class CommandQueue;
+
+class Player : public PlayerBase
+{
+public:
+
+											Player();
+
+	void									handleEvent(const std::optional<sf::Event>& event,
+												CommandQueue& commands) override;
+	void									handleRealtimeInput(CommandQueue& commands) override;
+	void									initializeActions();
+
+	void									assignKey(Action action, sf::Keyboard::Scancode key);
+	sf::Keyboard::Scancode					getAssignedKey(Action action) const;
+
+private:
+	static bool								isRealtimeAction(Action action);
+
+private:
+	std::map<sf::Keyboard::Scancode, Action> 	mKeyBinding; //keyboard to functor
+	std::map<Action, Command>				mActionBinding; //functor to scene input
+};
+
+
+#endif //PLAYER_H

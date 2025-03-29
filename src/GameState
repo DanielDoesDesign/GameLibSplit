@@ -1,0 +1,42 @@
+#include "GameState.h"
+
+//TODO: Investigate the use of pointers here
+
+extern sf::Vector2u gWindowSize;
+
+GameState::GameState(StateStack& stack, Context context)
+: State(stack, context)
+, mWorld(*context.window, gWindowSize)
+{
+}
+
+void GameState::draw()
+{
+	mWorld.draw();
+}
+
+bool GameState::update(sf::Time dt)
+{
+	mWorld.update(dt);
+
+	CommandQueue& commands = mWorld.getCommandQueue();
+	mPlayer.handleRealtimeInput(commands);
+
+	return true;
+
+}
+
+bool GameState::handleEvent(const sf::Event& event)
+{
+	//Game input handling
+	CommandQueue& commands = mWorld.getCommandQueue();
+	mPlayer.handleEvent(event,commands);
+
+	if(const auto* keyPressed = event.getIf<sf::Event::KeyPressed>())
+	{
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+			requestStackPush(States::Pause);
+	}
+
+	return true;
+}
