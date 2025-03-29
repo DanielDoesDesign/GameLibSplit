@@ -1,4 +1,4 @@
-{
+ {
     "version": "2.0.0",
     "tasks": [
         {
@@ -9,55 +9,107 @@
                 "cwd": "${workspaceFolder}"
             },
             "windows": {
-                "command": "${workspaceFolder}/GameWin.bat",
+                "command": "${workspaceFolder}/BuildWin.bat",
                 "args": [
                     "Debug"
                 ]
             },
             "linux": {
-                "command": "${workspaceFolder}/GameLinux.sh",
+                "command": "${workspaceFolder}/BuildLinux.sh",
                 "args": [
                     "Debug"
                 ]
             }
         },
-        { 
+        {
             "type": "shell",
-            "label": "Build Debug",
+            "label": "Build Debug (Linux)",
             "problemMatcher": [
                 "$gcc"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "linux": {
                 "command": "cmake",
                 "args": [
                     "--build",
                     "Targets/Debug"
                 ]
-            },
+            ,
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             }
         },
         {
             "type": "shell",
-            "label": "Build Release",
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "label": "Build Release (Linux)",
+            "problemMatcher": ["$gcc"],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "linux": {
                 "command": "cmake",
                 "args": [
                     "--build",
                     "Targets/Release"
                 ]
+        },
+        {
+            "type": "shell",
+            "label": "Build Debug (Windows)",
+            "problemMatcher": ["$gcc"],
+            "options": {
+              "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+              },
+            "windows": {
+              "command": "cmake",
+              "args": [
+                "--build",
+                "Targets/Debug"
+              ]
             }
+        },
+        {
+            "type": "shell",
+            "label": "Build Release (Windows)",
+            "problemMatcher": ["$gcc"],
+            "options": {
+              "cwd": "${workspaceFolder}"
+            },
+            "windows": {
+              "command": "cmake",
+              "args": [
+                "--build",
+                "Targets/Release"
+              ]
+            }
+        },
+		{
+            "label": "Clean Project (Win)",
+            "type": "shell",
+            "command": "./CleanWin.bat",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+		{
+            "label": "Deep Clean Project (Win)",
+            "type": "shell",
+            "command": "./CleanWinDeep.bat",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
+    
 }

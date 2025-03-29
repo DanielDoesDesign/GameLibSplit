@@ -1,11 +1,11 @@
 {
-    "configurations": 
-    [
+    "configurations": [
         {
             "includePath": [
-                "${workspaceFolder}/DanGame/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/Include/",
+                "${workspaceFolder}/Targets/Debug/_deps/sfml-src/include/"
             ],
-
             "configurationProvider": "ms-vscode.cmake-tools",
             "defines": [],
             "intelliSenseMode": "${default}",
