@@ -1,0 +1,75 @@
+#include "MenuState.h"
+#include "Utility.h"
+#include "ResourceHolder.h"
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/View.hpp>
+
+MenuState::MenuState(StateStack& stack, Context context)
+: State(stack, context)
+, mOptions()
+, mOptionsIndex(0)
+{
+	sf::Texture& texture = context.textures->get(Textures::TitleScreen);
+	sf::Font& font = context.fonts->get(Fonts::Main);
+
+	mBackgroundSprite.setTexture(texture);
+
+	sf::Text playOption(font);
+	playOption.setString("Play");
+	centerOrigin(playOption);
+	playOption.setPosition(context.window->getView().getSize() / 2.f);
+	mOptions.push_back(playOption);
+
+	updateOptionText();
+
+}
+
+void MenuState::draw()
+{
+	sf::RenderWindow& window = *getContext().window;
+
+	window.setView(window.getDefaultView());
+	window.draw(mBackgroundSprite);
+
+	for(const sf::Text& text : mOptions)
+		window.draw(text);
+}
+
+bool MenuState::update(sf::Time)
+{
+	return true;
+}
+
+bool MenuState::handleEvent(const sf::Event& event)
+{
+	if (!event.is<sf::Event::KeyPressed>())
+		return false;
+
+	if (const auto keyPressed = event.getIf<sf::Event::KeyPressed>())
+	{
+		if (keyPressed->scancode == sf::Keyboard::Scancode::Enter)
+		{
+			if (mOptionIndex == Play)
+			{
+				requestStackPop();
+				requestStackPush(States::Game);
+			}
+			else if (mOptionIndex == Exit)
+			{
+				requestStackPop();
+			}
+		}
+
+		else if (keyPressed->scancode == sf::Keyboard::Scancode::Up)
+		{
+			// Decrement and wrap-around
+			if (mOptionIndex > 0)
+			
+		}
+
+
+	}
+
+
+}

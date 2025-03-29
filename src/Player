@@ -1,0 +1,145 @@
+#include "Player.h"
+#include "SFML/Graphics.hpp"
+#include <iostream>
+#include "Aircraft.h"
+
+struct AircraftMover
+{
+	AircraftMover(float vx, float vy)
+	: velocity({vx, vy})
+	{
+	}
+
+	void operator() (Aircraft& aircraft, sf::Time) const
+	{
+		//downcast required because the command stores a function 
+		//which is invoked on SceneNode&, but we need Aircraft&
+		aircraft.accelerate(velocity);
+	}
+
+	sf::Vector2f velocity;
+};
+
+
+
+void Player::handleEvent(const std::optional<sf::Event>& event, 
+								CommandQueue& commands)
+{
+    //    const auto* keyPressedEvent = event->getIf<sf::Event::KeyPressed>();
+    //    const auto* keyReleasedEvent = event->getIf<sf::Event::KeyReleased>();
+
+    //std::cout << "Key scancode: " << static_cast<int>(keyPressedEvent->scancode) << std::endl;
+	
+	if (const auto* keyPressedEvent = event->getIf<sf::Event::KeyPressed>())
+	{
+		if (keyPressedEvent->scancode == sf::Keyboard::Scancode::P)
+		{
+		Command output;
+		output.category = Category::PlayerAircraft;
+		output.action = [] (SceneNode& s, sf::Time)
+		{
+			std::cout 	<< "PLAYER POS - X:" << s.getPosition().x << " , Y:"
+						<< s.getPosition().y << "\n";
+		};
+
+		commands.push(output);
+		}
+
+		if (keyPressedEvent->scancode == sf::Keyboard::Scancode::G)
+		{
+		Command output;
+		output.category = Category::Root;
+		output.action = [] (SceneNode& s, sf::Time)
+		{
+			s.printSceneGraph();
+		};
+
+			// Check if pressed key appears in key binding, trigger command if so
+			auto found = mKeyBinding.find(keyPressedEvent->scancode);
+			if (found != mKeyBinding.end() && !isRealtimeAction(found->second))
+				commands.push(mActionBinding[found->second]);
+		}
+	}
+}
+
+void Player::handleRealtimeInput(CommandQueue& commands)
+{
+	const float playerSpeed = 200.f;
+
+	for(auto pair : mKeyBinding)
+	{
+		// If key is pressed, lookup action and trigger corresponding command
+		if(sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
+			commands.push(mActionBinding[pair.second]);
+	}
+}
+
+void Player::initializeActions()
+{
+	const float playerSpeed = 200.f;
+
+	mActionBinding[MoveLeft].action	 = derivedAction<Aircraft>(AircraftMover(-playerSpeed, 0.f));
+	mActionBinding[MoveRight].action = derivedAction<Aircraft>(AircraftMover(+playerSpeed, 0.f));
+	mActionBinding[MoveUp].action    = derivedAction<Aircraft>(AircraftMover(0.f, -playerSpeed));
+	mActionBinding[MoveDown].action  = derivedAction<Aircraft>(AircraftMover(0.f, +playerSpeed));
+}
+
+void Player::assignKey(Action action, sf::Keyboard::Scancode key)
+{
+	//Remove all keys that already map to action
+	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end();)
+	{
+		if(itr->second == action)
+			mKeyBinding.erase(itr++);
+		else
+			++itr;
+	}
+
+	// Insert new binding
+	mKeyBinding[key] = action;
+}
+
+sf::Keyboard::Scancode Player::getAssignedKey(Action action) const
+{
+	for(auto pair : mKeyBinding)
+	{
+		if (pair.second == action)
+			return pair.first;
+	}
+
+	return sf::Keyboard::Scancode::Unknown;
+}
+
+
+Player::Player()
+{
+	mKeyBinding[sf::Keyboard::Scancode::Left] = MoveLeft;
+	mKeyBinding[sf::Keyboard::Scancode::Right] = MoveRight;
+	mKeyBinding[sf::Keyboard::Scancode::Up] = MoveUp;
+	mKeyBinding[sf::Keyboard::Scancode::Down] = MoveDown;
+
+	mKeyBinding[sf::Keyboard::Scancode::A] = MoveLeft;
+	mKeyBinding[sf::Keyboard::Scancode::D] = MoveRight;
+	mKeyBinding[sf::Keyboard::Scancode::W] = MoveUp;
+	mKeyBinding[sf::Keyboard::Scancode::S] = MoveDown;
+
+	initializeActions();
+
+	for(auto& pair : mActionBinding)
+		pair.second.category = Category::PlayerAircraft;
+}
+
+bool Player::isRealtimeAction(Action action)
+{
+	switch (action)
+	{
+		case MoveLeft:
+		case MoveRight:
+		case MoveDown:
+		case MoveUp:
+			return true;
+
+		default:
+			return false;
+	}
+}

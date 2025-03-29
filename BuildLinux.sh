@@ -19,6 +19,6 @@ fi
 # Generate CMake build files (re-runs only if changes are detected)
 cmake -S . -B $target -DCMAKE_BUILD_TYPE=$1 -DCMAKE_TOOLCHAIN_FILE="$target/conan_toolchain.cmake"
 
-# Compile
+#Compile
 #cmake --build $target --config $1
 
